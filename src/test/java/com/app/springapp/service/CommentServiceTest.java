@@ -1,5 +1,6 @@
 package com.app.springapp.service;
 
+import com.app.springapp.domain.dto.request.CommentRequestDTO;
 import com.app.springapp.domain.dto.response.CommentResponseDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -22,5 +23,14 @@ public class CommentServiceTest {
         comments.forEach(comment -> {
             log.info(comment.toString());
         });
+    }
+
+//    게시글에 댓글 달기 테스트
+    @Test
+    public void writePostCommentTest(){
+        CommentRequestDTO commentRequestDTO = new CommentRequestDTO();
+        commentRequestDTO.setCommentContent("댓글 달기 단위테스트");
+        Long postId = 1L;
+        commentService.writePostComment(postId, commentRequestDTO);
     }
 }

@@ -1,6 +1,7 @@
 package com.app.springapp.mapper;
 
 import com.app.springapp.domain.dto.CommentDTO;
+import com.app.springapp.domain.vo.CommentVO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -11,6 +12,7 @@ public interface CommentMapper {
     public List<CommentDTO> selectAllByPostId(Long postId);
 
     // 댓글 작성
+    public void insert (CommentVO commentVO);
 
     // 댓글 수정
 

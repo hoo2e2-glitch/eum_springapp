@@ -9,4 +9,12 @@
         WHERE POST_ID = #{postId}
     </select>
 
+    <insert id="insert" parameterType="CommentVO">
+        <selectKey resultType="Long" keyProperty="id" order="BEFORE">
+            SELECT SEQ_COMMENT.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO TBL_COMMENT (ID, COMMENT_CONTENT, POST_ID, USER_ID, COMMENT_ID)
+        VALUES (#{id}, #{commentContent}, #{postId}, #{userId}, #{commentId})
+    </insert>
+
 </mapper>

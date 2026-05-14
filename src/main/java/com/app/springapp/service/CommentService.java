@@ -1,16 +1,18 @@
 package com.app.springapp.service;
 
+import com.app.springapp.domain.dto.request.CommentRequestDTO;
 import com.app.springapp.domain.dto.response.CommentResponseDTO;
 
 import java.util.List;
 
 public interface CommentService {
 //    게시글 상세 페이지 에서 해당 게시글에 달린 댓글 조회
-    List<CommentResponseDTO> getAllPostComments(Long postId);
+    public List<CommentResponseDTO> getAllPostComments(Long postId);
 
 //    특정 유저가 남긴 모든 댓글 조회 (인기순 CommentDTO 의 commentLikeCount 기준으로, 최신순, CommentDTO 의 ID 기준으로)
 
 //    댓글 작성
+    public void writePostComment(Long postId, CommentRequestDTO commentRequestDTO);
 
 //    대댓글 작성
 
