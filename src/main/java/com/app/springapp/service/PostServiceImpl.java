@@ -183,4 +183,21 @@ public class PostServiceImpl implements PostService {
             throw new PostException(HttpStatus.BAD_REQUEST, "해당 게시글에 좋아요 할 수 없습니다.");
         }
     }
+
+//    게시글 좋아요 삭제
+    @Override
+    public void cancelPostLike(Long postId) {
+        Long userId = communityAuthService.getUserId();
+        communityAuthService.checkUserValidity(userId);
+
+        PostLikeVO postLikeVO = new PostLikeVO();
+        postLikeVO.setPostId(postId);
+        postLikeVO.setUserId(userId);
+
+        try {
+            postLikeDAO.deleteByUserIdAndPostId(postLikeVO);
+        } catch (Exception e) {
+            throw new PostException(HttpStatus.BAD_REQUEST, "해당 게시글 좋아요 취소 불가능");
+        }
+    }
 }

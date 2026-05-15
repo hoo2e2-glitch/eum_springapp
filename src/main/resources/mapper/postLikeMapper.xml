@@ -9,5 +9,9 @@
         VALUES (#{id}, #{userId}, #{postId})
     </insert>
 
+    <delete id="deleteByUserIdAndPostId" parameterType="PostLikeVO">
+        DELETE FROM TBL_POST_LIKE
+        WHERE USER_ID = #{userId} AND POST_ID = #{postId}
+    </delete>
 
 </mapper>

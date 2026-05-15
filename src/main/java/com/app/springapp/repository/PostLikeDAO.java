@@ -15,4 +15,8 @@ public class PostLikeDAO {
         postLikeMapper.insert(postLikeVO);
     }
 
+//    게시글 좋아요 삭제 쿼리
+    public void deleteByUserIdAndPostId(PostLikeVO postLikeVO){
+        postLikeMapper.deleteByUserIdAndPostId(postLikeVO);
+    }
 }

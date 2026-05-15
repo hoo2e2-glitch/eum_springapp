@@ -8,6 +8,6 @@ public interface PostLikeMapper {
 //    게시글 좋아요 넣기
     public void insert(PostLikeVO postLikeVO);
 
-
 //    게시글 좋아요 삭제
+    public void deleteByUserIdAndPostId(PostLikeVO postLikeVO);
 }

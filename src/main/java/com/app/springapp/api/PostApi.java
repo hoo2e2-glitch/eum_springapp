@@ -155,4 +155,48 @@ public class PostApi {
                 .status(HttpStatus.NO_CONTENT)
                 .body(ApiResponseDTO.of(true, "게시글 삭제 성공"));
     }
+
+//    게시글 좋아요 누르기
+    @GetMapping("/like/{postId}")
+    @Operation(description = "게시글 좋아요 하기")
+    @ApiResponse(responseCode = "200", description = "게시글 좋아요 성공")
+    @ApiResponse(responseCode = "400", description = "해당 게시글에 좋아요 할 수 없습니다")
+    @Parameter(
+            name = "postId",
+            description = "게시글 번호",
+            example = "1",
+            required = true,
+            in = ParameterIn.PATH,
+            schema = @Schema(type = "number")
+    )
+    public ResponseEntity<ApiResponseDTO> increasePostLikeCount(
+            @PathVariable Long postId
+    ){
+        postService.increasePostLikeCount(postId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponseDTO.of(true, "좋아요 성공"));
+    }
+
+//    게시글 좋아요 취소
+    @DeleteMapping("/like/{postId}")
+    @Operation(description = "게시글 좋아요 취소 하기")
+    @ApiResponse(responseCode = "204", description = "게시글 좋아요 취소 성공")
+    @ApiResponse(responseCode = "400", description = "해당 게시글 좋아요 취소 불가능")
+    @Parameter(
+            name = "postId",
+            description = "게시글 번호",
+            example = "1",
+            required = true,
+            in = ParameterIn.PATH,
+            schema = @Schema(type = "number")
+    )
+    public ResponseEntity<ApiResponseDTO> cancelPostLike(
+            @PathVariable Long postId
+    ){
+        postService.cancelPostLike(postId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponseDTO.of(true, "좋아요 취소 성공"));
+    }
 }

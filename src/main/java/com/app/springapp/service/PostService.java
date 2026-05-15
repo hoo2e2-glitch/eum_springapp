@@ -33,4 +33,7 @@ public interface PostService {
 
 //    게시글 좋아요 증가
     public void increasePostLikeCount(Long postId);
+
+//    게시글 좋아요 삭제
+    public void cancelPostLike(Long postId);
 }

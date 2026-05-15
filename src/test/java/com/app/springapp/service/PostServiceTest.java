@@ -118,4 +118,11 @@ public class PostServiceTest {
         Long id = 19L;
         postService.increasePostLikeCount(id);
     }
+
+//    게시글 좋아요 취소테스트
+    @Test
+    public void cancelPostLikeTest(){
+        Long id = 2L;
+        postService.cancelPostLike(id);
+    }
 }
