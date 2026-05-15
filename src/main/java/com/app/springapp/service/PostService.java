@@ -30,4 +30,7 @@ public interface PostService {
 
 //    게시글 조회수 증가
     public void increasePostReadCount(Long id);
+
+//    게시글 좋아요 증가
+    public void increasePostLikeCount(Long postId);
 }

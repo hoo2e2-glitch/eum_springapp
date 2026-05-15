@@ -4,9 +4,11 @@ import com.app.springapp.domain.dto.PostDTO;
 import com.app.springapp.domain.dto.request.PostRequestDTO;
 import com.app.springapp.domain.dto.response.PostResponseDTO;
 import com.app.springapp.domain.dto.response.PostSelectResponseDTO;
+import com.app.springapp.domain.vo.PostLikeVO;
 import com.app.springapp.domain.vo.PostVO;
 import com.app.springapp.exception.PostException;
 import com.app.springapp.repository.PostDAO;
+import com.app.springapp.repository.PostLikeDAO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 public class PostServiceImpl implements PostService {
     private final PostDAO postDAO;
     private final CommunityAuthService communityAuthService;
+    private final PostLikeDAO postLikeDAO;
 
     @Override
     public Map<String, Object> getAllPosts(Map<String, Object> req) {
@@ -160,5 +163,24 @@ public class PostServiceImpl implements PostService {
     @Override
     public void increasePostReadCount(Long id) {
         postDAO.updatePostReadCount(id);
+    }
+
+//    게시글 좋아요 증가 시키기
+    @Override
+    public void increasePostLikeCount(Long postId) {
+        Long userId = communityAuthService.getUserId();
+
+//        유효성 검증
+        communityAuthService.checkUserValidity(userId);
+
+        PostLikeVO postLikeVO = new PostLikeVO();
+        postLikeVO.setPostId(postId);
+        postLikeVO.setUserId(userId);
+
+        try {
+            postLikeDAO.save(postLikeVO);
+        } catch (Exception e) {
+            throw new PostException(HttpStatus.BAD_REQUEST, "해당 게시글에 좋아요 할 수 없습니다.");
+        }
     }
 }

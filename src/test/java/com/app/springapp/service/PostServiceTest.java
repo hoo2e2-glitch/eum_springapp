@@ -111,4 +111,11 @@ public class PostServiceTest {
         Long id = 61L;
         postService.increasePostReadCount(id);
     }
+
+//    게시글 좋아요 테스트 (정상 작동)
+    @Test
+    public void increasePostLikeCountTest(){
+        Long id = 19L;
+        postService.increasePostLikeCount(id);
+    }
 }
