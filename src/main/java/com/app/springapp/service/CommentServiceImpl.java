@@ -125,4 +125,23 @@ public class CommentServiceImpl implements CommentService {
             throw new CommentException(HttpStatus.BAD_REQUEST, "댓글 좋아요 추가 실패");
         }
     }
+
+//    좋아요 취소
+    @Override
+    public void cancelCommentLike(Long commentId) {
+        Long userId = communityAuthService.getUserId();
+        communityAuthService.checkUserValidity(userId);
+
+//        DAO 에 전달 할 VO 제작
+        CommentLikeVO commentLikeVO = new CommentLikeVO();
+        commentLikeVO.setCommentId(commentId);
+        commentLikeVO.setUserId(userId);
+
+//        DAO 에 VO 전달하여 DB 접근하여 조작
+        try {
+            commentLikeDAO.deleteByUserIdAndCommentId(commentLikeVO);
+        } catch (Exception e) {
+            throw new CommentException(HttpStatus.BAD_REQUEST, "댓글 좋아요 취소 실패");
+        }
+    }
 }

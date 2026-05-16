@@ -18,4 +18,7 @@ public interface CommentService {
 
 //    댓글 좋아요 남기기
     public void addCommentLike(Long commentId);
+
+//    댓글 좋아요 취소
+    public void cancelCommentLike(Long commentId);
 }

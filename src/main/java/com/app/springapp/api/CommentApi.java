@@ -149,5 +149,26 @@ public class CommentApi {
                 .status(HttpStatus.NO_CONTENT)
                 .body(ApiResponseDTO.of(true, "댓글 삭제 성공"));
     }
+//    댓글 좋아요 하기
+    @GetMapping("/likes/{commentId}")
+    public ResponseEntity<ApiResponseDTO> addCommentLike(
+            @PathVariable Long commentId
+    ){
+        commentService.addCommentLike(commentId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponseDTO.of(true, "댓글 좋아요 추가 성공"));
+    }
+
+//    댓글 좋아요 취소
+    @DeleteMapping("/likes/{commentId}")
+    public ResponseEntity<ApiResponseDTO> cancelCommentLike(
+            @PathVariable Long commentId
+    ){
+        commentService.cancelCommentLike(commentId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponseDTO.of(true, "댓글 좋아요 취소 성공"));
+    }
 
 }

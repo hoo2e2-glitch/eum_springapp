@@ -8,4 +8,9 @@
         INSERT INTO TBL_COMMENT_LIKE (ID, USER_ID, COMMENT_ID)
         VALUES (#{id}, #{userId}, #{commentId})
     </insert>
+
+    <delete id="deleteByUserIdAndCommentId" parameterType="CommentLikeVO">
+        DELETE FROM TBL_COMMENT_LIKE
+        WHERE USER_ID = #{userId} AND COMMENT_ID = #{commentId}
+    </delete>
 </mapper>

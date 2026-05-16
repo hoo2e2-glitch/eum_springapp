@@ -14,4 +14,9 @@ public class CommentLikeDAO {
     public void save(CommentLikeVO commentLikeVO){
         commentLikeMapper.insert(commentLikeVO);
     }
+
+//    댓글 좋아요 취소
+    public void deleteByUserIdAndCommentId(CommentLikeVO commentLikeVO){
+        commentLikeMapper.deleteByUserIdAndCommentId(commentLikeVO);
+    }
 }

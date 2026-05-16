@@ -90,4 +90,13 @@ public class CommentServiceTest {
         Long commentId = 1L;
         commentService.addCommentLike(commentId);
     }
+
+//    댓글 좋아요 취소 테스트 (통과)
+    @Test
+    public void cancelCommentLikeTest(){
+//        기존: 35개
+
+        Long commentId = 19L;
+        commentService.cancelCommentLike(commentId);
+    }
 }

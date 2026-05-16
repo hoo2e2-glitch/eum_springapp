@@ -9,4 +9,6 @@ public interface CommentLikeMapper {
 //    댓글에 좋아요 하기
     public void insert(CommentLikeVO commentLikeVO);
 
+//    댓글 좋아요 취소
+    public void deleteByUserIdAndCommentId(CommentLikeVO commentLikeVO);
 }
