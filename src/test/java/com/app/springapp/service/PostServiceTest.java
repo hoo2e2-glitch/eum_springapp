@@ -46,12 +46,9 @@ public class PostServiceTest {
 //    단위 개시글 불러오기 테스트
     @Test
     public void getPostTest(){
-        PostDTO  postDTO = new PostDTO();
-        postDTO.setId(99L);
-//        postDTO.setUserId(2L); // 좋아요 한 해
-        postDTO.setUserId(3L); // 좋아요 x
+        Long id=1L;
 
-        log.info(postService.getPost(postDTO).toString());
+        log.info(postService.getPost(id).toString());
     }
 
 //    유저의 특정 게시글 불러오게 하기
@@ -113,5 +110,19 @@ public class PostServiceTest {
     public void increasePostReadCountTest(){
         Long id = 61L;
         postService.increasePostReadCount(id);
+    }
+
+//    게시글 좋아요 테스트 (정상 작동)
+    @Test
+    public void increasePostLikeCountTest(){
+        Long id = 19L;
+        postService.increasePostLikeCount(id);
+    }
+
+//    게시글 좋아요 취소테스트
+    @Test
+    public void cancelPostLikeTest(){
+        Long id = 2L;
+        postService.cancelPostLike(id);
     }
 }

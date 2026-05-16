@@ -14,4 +14,8 @@ public class ChatRoomRequestDTO {
     private String chatRoomType;
     @Schema(description = "채팅방 프로필 이미지", example = "default.jpg")
     private String chatRoomProfile;
+    @Schema(description = "채팅방 상세 정보", example = "수어 학습 공유방 입니다")
+    private String chatRoomDetail;
+    @Schema(description = "채팅방 인원 수", example = "100")
+    private int ChatRoomLimit;
 }

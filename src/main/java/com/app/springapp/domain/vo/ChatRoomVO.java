@@ -13,7 +13,10 @@ public class ChatRoomVO {
     private String chatRoomType;
     private LocalDateTime chatRoomCreateAt;
     private String chatRoomProfile;
+    private boolean chatRoomIsDeleted;
     private Long userId;
+    private String chatRoomDetail;
+    private int ChatRoomLimit;
 
     public static ChatRoomVO from(ChatRoomRequestDTO chatRoomRequestDTO) {
         ChatRoomVO chatRoomVO = new ChatRoomVO();
@@ -24,6 +27,9 @@ public class ChatRoomVO {
         String chatRoomProfile = chatRoomRequestDTO.getChatRoomProfile();
         String finalProfile = chatRoomProfile != null ? chatRoomProfile : "default.jpg";
         chatRoomVO.setChatRoomProfile(finalProfile);
+
+        chatRoomVO.setChatRoomLimit(chatRoomRequestDTO.getChatRoomLimit());
+        chatRoomVO.setChatRoomDetail(chatRoomRequestDTO.getChatRoomDetail());
 
         return chatRoomVO;
     }

@@ -1,5 +1,6 @@
 package com.app.springapp.service;
 
+import com.app.springapp.domain.dto.ChatRoomDTO;
 import com.app.springapp.domain.dto.request.ChatRequestDTO;
 import com.app.springapp.domain.dto.response.ApiResponseDTO;
 import com.app.springapp.domain.dto.response.ChatResponseDTO;
@@ -11,10 +12,13 @@ import com.app.springapp.repository.ChatDAO;
 import com.app.springapp.repository.ChatRoomDAO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -39,10 +43,11 @@ public class ChatServiceImpl implements ChatService {
 
 //    메세지 작성
     @Override
-    public ApiResponseDTO writeChatMessage(Long chatRoomId, ChatRequestDTO chatRequestDTO) {
+    public Long writeChatMessage(Long chatRoomId, ChatRequestDTO chatRequestDTO) {
 //        DTO 를 VO 로 변환 한 뒤에 작성 해야함
 
         boolean isJoined = this.isUserInChatRoom(chatRoomId);
+        Long id = 0L;
         ChatVO chatVO = ChatVO.from(chatRequestDTO);
         chatVO.setChatRoomId(chatRoomId);
         chatVO.setUserId(communityAuthService.getUserId());
@@ -52,9 +57,10 @@ public class ChatServiceImpl implements ChatService {
                 chatRoomService.joinChatRoom(chatRoomId);
             }
             chatDAO.save(chatVO);
-            return ApiResponseDTO.of(true, "메세지 전송 성공");
+            id = chatVO.getId();
+            return id;
         } catch (Exception e) {
-            return ApiResponseDTO.of(false, "메세지 전송 실패");
+            throw new ChatException(HttpStatus.BAD_REQUEST, "메세지 전송 실패");
         }
     }
 
@@ -70,12 +76,29 @@ public class ChatServiceImpl implements ChatService {
 
 //    채팅방 관련
 
-//    모든 채팅방 불러와주기 (커뮤니티 페이지 들어왔을 때 보이는 모든 채팅방)
+//    모든 채팅방 불러와주기 (커뮤니티 페이지 들어왔을 때 보이는 모든 채팅방, 페이지네이션)
     @Override
-    public List<ChatRoomResponseDTO> loadAllChatRoom() {
-        List<ChatRoomVO> chatRoomList = chatRoomDAO.findAll();
-        return chatRoomList.stream()
+    public Map<String, Object> loadAllChatRoom(int page) {
+        int size = 6;
+        int offset = (page - 1) * size;
+
+        Map<String, Object> filters = new HashMap<>();
+        filters.put("size", size);
+        filters.put("offset", offset);
+
+        List<ChatRoomResponseDTO> rooms = chatRoomDAO.findAllWithPaging(filters).stream()
                 .map(ChatRoomResponseDTO::from)
                 .collect(Collectors.toList());
+
+        int roomCounts = chatRoomDAO.findCount();
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("rooms", rooms);
+        result.put("currentPage", page);
+        result.put("totalPages", (int) Math.ceil((double) roomCounts / size));
+        result.put("size", size);
+        result.put("roomCounts", roomCounts);
+
+        return result;
     }
 }
