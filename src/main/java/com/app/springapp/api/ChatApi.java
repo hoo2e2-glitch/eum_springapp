@@ -63,11 +63,11 @@ public class ChatApi {
             @PathVariable Long chatRoomId,
             @RequestBody ChatRequestDTO chatRequestDTO
             ){
-        ApiResponseDTO apiResponseDTO = chatService.writeChatMessage(chatRoomId, chatRequestDTO);
+        chatService.writeChatMessage(chatRoomId, chatRequestDTO);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(apiResponseDTO);
+                .body(ApiResponseDTO.of(true, "메세지 작성 성공"));
     }
 
 //    모든 채팅방 불러오기

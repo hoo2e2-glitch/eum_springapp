@@ -16,7 +16,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        // 클라이언트 연결 URL: ws://localhost:8080/ws/chat/{chatRoomId}
+        // 클라이언트 연결 URL: ws://localhost:10000/ws/chat/{chatRoomId}
         registry.addHandler(chatWebSocketHandler, "/ws/chat/**")
                 .setAllowedOrigins("http://localhost:3000");
     }

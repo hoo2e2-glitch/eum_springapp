@@ -1,6 +1,7 @@
 package com.app.springapp.handler;
 
 import com.app.springapp.domain.dto.request.ChatRequestDTO;
+import com.app.springapp.domain.dto.response.ApiResponseDTO;
 import com.app.springapp.service.ChatService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -41,16 +42,23 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         Long chatRoomId = extractChatRoomId(session);
         ChatRequestDTO chatRequestDTO = objectMapper.readValue(message.getPayload(), ChatRequestDTO.class);
 
+        log.info("사용자가 메세지 전송 시도");
+        log.info("메세지: {}", chatRequestDTO);
+
         // DB 저장 — 내부적으로 CommunityAuthServiceImpl.getUserId() = 2L(더미) 사용
-        chatService.writeChatMessage(chatRoomId, chatRequestDTO);
+        Long id = chatService.writeChatMessage(chatRoomId, chatRequestDTO);
 
         // 브로드캐스트 메시지 구성
         Map<String, Object> broadcastData = new HashMap<>();
+//        채팅 메세지의 id 반환
+        broadcastData.put("id", id);
         broadcastData.put("chatContent", chatRequestDTO.getChatContent());
         broadcastData.put("chatType", chatRequestDTO.getChatType());
         broadcastData.put("userId", 2L);
         broadcastData.put("chatRoomId", chatRoomId);
         broadcastData.put("chatCreateAt", LocalDateTime.now().toString());
+
+        log.info("타 사용자 한테도 전달");
 
         broadcast(chatRoomId, objectMapper.writeValueAsString(broadcastData));
     }

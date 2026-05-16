@@ -12,6 +12,7 @@ import com.app.springapp.repository.ChatDAO;
 import com.app.springapp.repository.ChatRoomDAO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,10 +43,11 @@ public class ChatServiceImpl implements ChatService {
 
 //    메세지 작성
     @Override
-    public ApiResponseDTO writeChatMessage(Long chatRoomId, ChatRequestDTO chatRequestDTO) {
+    public Long writeChatMessage(Long chatRoomId, ChatRequestDTO chatRequestDTO) {
 //        DTO 를 VO 로 변환 한 뒤에 작성 해야함
 
         boolean isJoined = this.isUserInChatRoom(chatRoomId);
+        Long id = 0L;
         ChatVO chatVO = ChatVO.from(chatRequestDTO);
         chatVO.setChatRoomId(chatRoomId);
         chatVO.setUserId(communityAuthService.getUserId());
@@ -55,9 +57,10 @@ public class ChatServiceImpl implements ChatService {
                 chatRoomService.joinChatRoom(chatRoomId);
             }
             chatDAO.save(chatVO);
-            return ApiResponseDTO.of(true, "메세지 전송 성공");
+            id = chatVO.getId();
+            return id;
         } catch (Exception e) {
-            return ApiResponseDTO.of(false, "메세지 전송 실패");
+            throw new ChatException(HttpStatus.BAD_REQUEST, "메세지 전송 실패");
         }
     }
 
