@@ -27,6 +27,8 @@ public class ChatRoomResponseDTO {
     private String chatRoomDetail;
     @Schema(description = "채팅방 채팅 가능 정원", example = "100")
     private int ChatRoomLimit;
+    @Schema(description = "채팅방 현재 채팅중인 인원", example = "50")
+    private int ChatRoomUsers;
 
     public static ChatRoomResponseDTO from(ChatRoomDTO dto) {
         ChatRoomResponseDTO res = new ChatRoomResponseDTO();
@@ -36,6 +38,9 @@ public class ChatRoomResponseDTO {
         res.setChatRoomCreateAt(dto.getChatRoomCreateAt());
         res.setChatRoomProfile(dto.getChatRoomProfile());
 //        res.setUserId(dto.getUserId());
+        res.setChatRoomDetail(dto.getChatRoomDetail());
+        res.setChatRoomLimit(dto.getChatRoomLimit());
+        res.setChatRoomUsers(dto.getChatRoomUsers());
         return res;
     }
 

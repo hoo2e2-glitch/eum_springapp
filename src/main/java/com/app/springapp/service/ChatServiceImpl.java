@@ -1,5 +1,6 @@
 package com.app.springapp.service;
 
+import com.app.springapp.domain.dto.ChatRoomDTO;
 import com.app.springapp.domain.dto.request.ChatRequestDTO;
 import com.app.springapp.domain.dto.response.ApiResponseDTO;
 import com.app.springapp.domain.dto.response.ChatResponseDTO;
@@ -73,10 +74,9 @@ public class ChatServiceImpl implements ChatService {
 //    모든 채팅방 불러와주기 (커뮤니티 페이지 들어왔을 때 보이는 모든 채팅방)
     @Override
     public List<ChatRoomResponseDTO> loadAllChatRoom() {
-        List<ChatRoomVO> chatRoomList = chatRoomDAO.findAll();
+        List<ChatRoomDTO> chatRoomList = chatRoomDAO.findAll();
         return chatRoomList.stream()
                 .map(ChatRoomResponseDTO::from)
                 .collect(Collectors.toList());
     }
-
 }
