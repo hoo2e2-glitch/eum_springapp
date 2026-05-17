@@ -23,7 +23,6 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     @Override
     public void createChatRoom(ChatRoomRequestDTO chatRoomRequestDTO) {
         Long userId = communityAuthService.getUserId();
-//        Long userId = 0L;
         if(userId == null || userId == 0L){
             throw new ChatException(HttpStatus.UNAUTHORIZED, "채팅방 생성 권한이 없습니다.");
         }

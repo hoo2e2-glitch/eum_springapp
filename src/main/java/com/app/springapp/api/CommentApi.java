@@ -1,0 +1,174 @@
+package com.app.springapp.api;
+
+import com.app.springapp.domain.dto.request.CommentRequestDTO;
+import com.app.springapp.domain.dto.response.ApiResponseDTO;
+import com.app.springapp.domain.dto.response.CommentResponseDTO;
+import com.app.springapp.service.CommentService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/comments")
+public class CommentApi {
+
+    private final CommentService commentService;
+
+//    게시글 내 댓글 조회 api
+    @GetMapping("/{postId}")
+    @Operation(description = "게시글 내 댓글 조회")
+    @ApiResponse(responseCode = "200", description = "게시글 내 댓글 조회 성공")
+    @ApiResponse(responseCode = "400", description = "게시글 내 댓글 조회 실패 (잘못된 요청)")
+    @Parameter(
+            name = "postId",
+            description = "게시글 아이디",
+            example = "1",
+            required = true,
+            in = ParameterIn.PATH,
+            schema = @Schema(type = "number")
+    )
+    public ResponseEntity<ApiResponseDTO> getAllPostComments(
+            @PathVariable Long postId
+    ){
+        List<CommentResponseDTO> comments = commentService.getAllPostComments(postId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponseDTO.of(true, "댓글 불러오기 성공", comments));
+    }
+
+//    게시글 내 댓글 작성
+    @PostMapping("/{postId}")
+    @Operation(description = "게시글 내 댓글 작성")
+    @ApiResponse(responseCode = "200", description = "게시글 내 댓글 작성 성공")
+    @ApiResponse(responseCode = "400", description = "게시글 내 댓글 작성 실패 (잘못된 요청)")
+    @Parameter(
+            name = "postId",
+            description = "게시글 아이디",
+            example = "1",
+            required = true,
+            in = ParameterIn.PATH,
+            schema = @Schema(type = "number")
+    )
+    public ResponseEntity<ApiResponseDTO> writePostComment(
+            @PathVariable Long postId,
+            @RequestBody CommentRequestDTO commentRequestDTO
+    ){
+        commentService.writePostComment(postId, commentRequestDTO);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponseDTO.of(true, "댓글 작성 성공"));
+    }
+
+    @PostMapping("/{postId}/replies/{commentId}")
+    @Operation(description = "게시글 내 대댓글 작성")
+    @ApiResponse(responseCode = "200", description = "대댓글 작성 성공")
+    @ApiResponse(responseCode = "400", description = "대댓글 작성 실패 (잘못된 요청)")
+    @Parameter(
+            name = "postId",
+            description = "게시글 아이디",
+            example = "1",
+            required = true,
+            in = ParameterIn.PATH,
+            schema = @Schema(type = "number")
+    )
+    @Parameter(name = "commentId",
+            description = "부모 댓글 아이디",
+            example = "1",
+            required = true,
+            in = ParameterIn.PATH,
+            schema = @Schema(type = "number")
+    )
+    public ResponseEntity<ApiResponseDTO> writePostReply(
+            @PathVariable Long postId,
+            @PathVariable Long commentId,
+            @RequestBody CommentRequestDTO commentRequestDTO
+    ) {
+        commentService.writePostReply(postId, commentId, commentRequestDTO);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponseDTO.of(true, "대댓글 작성 성공"));
+    }
+
+    @PutMapping("/{postId}/{commentId}")
+    @Operation(description = "게시글 내 댓글 수정")
+    @ApiResponse(responseCode = "200", description = "댓글 수정 성공")
+    @ApiResponse(responseCode = "400", description = "해당 댓글 수정 권한 없습니다.")
+    @Parameter(
+            name = "postId",
+            description = "게시글 아이디",
+            example = "1",
+            required = true,
+            in = ParameterIn.PATH,
+            schema = @Schema(type = "number")
+    )
+    @Parameter(
+            name = "commentId",
+            description = "댓글 아이디",
+            example = "1",
+            required = true,
+            in = ParameterIn.PATH,
+            schema = @Schema(type = "number")
+    )
+    public ResponseEntity<ApiResponseDTO> updatePostComment(
+            @PathVariable Long postId,
+            @PathVariable Long commentId,
+            @RequestBody CommentRequestDTO commentRequestDTO
+    ) {
+        commentService.updateComment(commentId, commentRequestDTO);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponseDTO.of(true, "댓글 수정 성공"));
+    }
+
+    @DeleteMapping("/{commentId}")
+    @Operation(description = "댓글 삭제 (대댓글 포함 소프트 삭제)")
+    @ApiResponse(responseCode = "204", description = "댓글 삭제 성공")
+    @ApiResponse(responseCode = "400", description = "해당 댓글 삭제 권한 없습니다.")
+    @Parameter(
+            name = "commentId",
+            description = "댓글 아이디",
+            example = "1",
+            required = true,
+            in = ParameterIn.PATH,
+            schema = @Schema(type = "number")
+    )
+    public ResponseEntity<ApiResponseDTO> deletePostComment(
+            @PathVariable Long commentId
+    ) {
+        commentService.deleteComment(commentId);
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .body(ApiResponseDTO.of(true, "댓글 삭제 성공"));
+    }
+//    댓글 좋아요 하기
+    @GetMapping("/likes/{commentId}")
+    public ResponseEntity<ApiResponseDTO> addCommentLike(
+            @PathVariable Long commentId
+    ){
+        commentService.addCommentLike(commentId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponseDTO.of(true, "댓글 좋아요 추가 성공"));
+    }
+
+//    댓글 좋아요 취소
+    @DeleteMapping("/likes/{commentId}")
+    public ResponseEntity<ApiResponseDTO> cancelCommentLike(
+            @PathVariable Long commentId
+    ){
+        commentService.cancelCommentLike(commentId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponseDTO.of(true, "댓글 좋아요 취소 성공"));
+    }
+
+}

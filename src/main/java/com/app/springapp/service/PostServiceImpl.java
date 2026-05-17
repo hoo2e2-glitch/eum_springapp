@@ -3,9 +3,12 @@ package com.app.springapp.service;
 import com.app.springapp.domain.dto.PostDTO;
 import com.app.springapp.domain.dto.request.PostRequestDTO;
 import com.app.springapp.domain.dto.response.PostResponseDTO;
+import com.app.springapp.domain.dto.response.PostSelectResponseDTO;
+import com.app.springapp.domain.vo.PostLikeVO;
 import com.app.springapp.domain.vo.PostVO;
 import com.app.springapp.exception.PostException;
 import com.app.springapp.repository.PostDAO;
+import com.app.springapp.repository.PostLikeDAO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -17,69 +20,60 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(rollbackFor = {Exception.class, PostException.class})
 public class PostServiceImpl implements PostService {
     private final PostDAO postDAO;
-
-    //    로그인 되기 전 까지 유저 아이디 관련하는거 담당하는 매서드 임시 정의
-    public Long getUserId(){
-        return 3L;
-    }
+    private final CommunityAuthService communityAuthService;
+    private final PostLikeDAO postLikeDAO;
 
     @Override
     public Map<String, Object> getAllPosts(Map<String, Object> req) {
         int page = (Integer) req.get("page");
         int size = 4;
         int offset = (page - 1) * size;
-        int totalPages = 0;
         String postTag = (String) req.get("postTag");
-        log.info("post tag 테스트 용: {}", postTag);
 
         Map<String, Object> filters = new HashMap<>();
-        Map<String, Object> result = new HashMap<>();
         filters.put("size", size);
         filters.put("offset", offset);
         filters.put("postTag", postTag);
 
-        // 포스트 사이즈는 얼마인지, 무엇인지 각각 반환 하는거도 생각 해야함
-        // 조건에 해당 하는 포스트 불러오기
         List<PostResponseDTO> posts = postDAO.findAll(filters).stream()
                 .map(PostResponseDTO::from)
                 .collect(Collectors.toList());
 
-        // 조건에 해당하는 포스트의 총 갯수 보기
         int postCounts = postDAO.findCount(postTag);
-        if(postCounts % size == 0){
-            totalPages = postCounts / size;
-        } else {
-            totalPages = (postCounts / size) + 1;
-        }
 
+        Map<String, Object> result = new HashMap<>();
         result.put("posts", posts);
         result.put("currentPage", page);
-        result.put("totalPages", totalPages);
+        result.put("totalPages", calcTotalPages(postCounts, size));
         result.put("size", size);
         result.put("postCounts", postCounts);
 
         return result;
     }
 
-//    게시글 조회
+//    특정 게시글 조회
     @Override
-    public PostDTO getPost(PostDTO postDTO) {
-//        조회수 증가
-        this.increasePostReadCount(postDTO.getId());
+    public PostSelectResponseDTO getPost(Long id) {
+        Long userId = communityAuthService.getUserId();
+
+        PostDTO postDTO = new PostDTO();
+        postDTO.setId(id);
+        postDTO.setUserId(userId);
 
 //        게시글 불러오기 (없다면 예외)
         PostDTO post = postDAO.findById(postDTO).orElseThrow(() -> {
             throw new PostException(HttpStatus.BAD_REQUEST, "포스트 불러오기 실패");
         });
 
-//        게시글 반환
-        return post;
+//        존재 확인 후 조회수 증가
+        this.increasePostReadCount(id);
+
+        return PostSelectResponseDTO.from(post);
     }
 
 //    특정 유저의 프로필 에서 해당 유저가 작성 한 모든 게시글 보여주기
@@ -88,10 +82,8 @@ public class PostServiceImpl implements PostService {
         int page = (Integer) req.get("page");
         int size = 4;
         int offset = (page - 1) * size;
-        int totalPages = 0;
 
         Map<String, Object> filters = new HashMap<>();
-        Map<String, Object> result = new HashMap<>();
         filters.put("size", size);
         filters.put("offset", offset);
         filters.put("userId", userId);
@@ -100,17 +92,12 @@ public class PostServiceImpl implements PostService {
                 .map(PostResponseDTO::from)
                 .collect(Collectors.toList());
 
-        // 조건에 해당하는 포스트의 총 갯수 보기
         int postCounts = postDAO.countByUserId(userId);
-        if(postCounts % size == 0){
-            totalPages = postCounts / size;
-        } else {
-            totalPages = (postCounts / size) + 1;
-        }
 
+        Map<String, Object> result = new HashMap<>();
         result.put("posts", posts);
         result.put("currentPage", page);
-        result.put("totalPages", totalPages);
+        result.put("totalPages", calcTotalPages(postCounts, size));
         result.put("size", size);
         result.put("postCounts", postCounts);
 
@@ -121,7 +108,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public void writePost(PostRequestDTO postRequestDTO) {
         PostVO postVO = PostVO.from(postRequestDTO);
-        postVO.setUserId(getUserId());
+        postVO.setUserId(communityAuthService.getUserId());
         try {
             postDAO.save(postVO);
         } catch (Exception e) {
@@ -132,7 +119,7 @@ public class PostServiceImpl implements PostService {
 //    게시글 수정
     @Override
     public void updatePost(Long id, PostRequestDTO postRequestDTO) {
-        Long userId = getUserId();
+        Long userId = communityAuthService.getUserId();
         PostVO postVO = PostVO.from(postRequestDTO);
         postVO.setId(id);
         postVO.setUserId(userId);
@@ -147,12 +134,19 @@ public class PostServiceImpl implements PostService {
 //    게시글 삭제
     @Override
     public void deletePost(Long id) {
-        Long userId = getUserId();
+        Long userId = communityAuthService.getUserId();
         if(canTouchPost(id, userId)){
-            postDAO.updatePostIsDeleted(id);
+            PostVO postVO = new PostVO();
+            postVO.setId(id);
+            postVO.setUserId(userId);
+            postDAO.updatePostIsDeleted(postVO);
         } else {
             throw new PostException(HttpStatus.BAD_REQUEST, "해당 게시글 삭제 권한 없습니다.");
         }
+    }
+
+    private int calcTotalPages(int totalCount, int size) {
+        return (int) Math.ceil((double) totalCount / size);
     }
 
 //    유저가 해당 게시글 접근 권한 있는지 확인
@@ -169,5 +163,41 @@ public class PostServiceImpl implements PostService {
     @Override
     public void increasePostReadCount(Long id) {
         postDAO.updatePostReadCount(id);
+    }
+
+//    게시글 좋아요 증가 시키기
+    @Override
+    public void increasePostLikeCount(Long postId) {
+        Long userId = communityAuthService.getUserId();
+
+//        유효성 검증
+        communityAuthService.checkUserValidity(userId);
+
+        PostLikeVO postLikeVO = new PostLikeVO();
+        postLikeVO.setPostId(postId);
+        postLikeVO.setUserId(userId);
+
+        try {
+            postLikeDAO.save(postLikeVO);
+        } catch (Exception e) {
+            throw new PostException(HttpStatus.BAD_REQUEST, "해당 게시글에 좋아요 할 수 없습니다.");
+        }
+    }
+
+//    게시글 좋아요 삭제
+    @Override
+    public void cancelPostLike(Long postId) {
+        Long userId = communityAuthService.getUserId();
+        communityAuthService.checkUserValidity(userId);
+
+        PostLikeVO postLikeVO = new PostLikeVO();
+        postLikeVO.setPostId(postId);
+        postLikeVO.setUserId(userId);
+
+        try {
+            postLikeDAO.deleteByUserIdAndPostId(postLikeVO);
+        } catch (Exception e) {
+            throw new PostException(HttpStatus.BAD_REQUEST, "해당 게시글 좋아요 취소 불가능");
+        }
     }
 }

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.app.springapp.mapper.CommentMapper">
+    <select id="selectAllByPostId" parameterType="Long" resultType="CommentDTO">
+        SELECT ID, COMMENT_CONTENT, COMMENT_CREATE_AT, COMMENT_LIKE_COUNT, COMMENT_REPLY_COUNT, COMMENT_ID,
+               USER_NICKNAME, USER_PROFILE,  USER_ID,
+               POST_ID
+        FROM VW_COMMENT
+        WHERE POST_ID = #{postId}
+        ORDER BY COALESCE(COMMENT_ID, ID) DESC, COMMENT_ID NULLS FIRST, ID DESC
+    </select>
+
+    <insert id="insert" parameterType="CommentVO">
+        <selectKey resultType="Long" keyProperty="id" order="BEFORE">
+            SELECT SEQ_COMMENT.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO TBL_COMMENT (ID, COMMENT_CONTENT, POST_ID, USER_ID, COMMENT_ID)
+        VALUES (#{id}, #{commentContent}, #{postId}, #{userId}, #{commentId})
+    </insert>
+
+    <select id="existByIdAndPostId" parameterType="CommentVO" resultType="int">
+        SELECT COUNT(*)
+        FROM TBL_COMMENT
+        WHERE ID = #{id} AND POST_ID = #{postId} AND COMMENT_IS_DELETED = 0 AND COMMENT_ID IS NULL
+    </select>
+
+    <select id="existByIdAndUserId" parameterType="CommentVO" resultType="int">
+        SELECT COUNT(*)
+        FROM TBL_COMMENT
+        WHERE ID = #{id} AND USER_ID = #{userId} AND COMMENT_IS_DELETED = 0
+    </select>
+
+    <update id="update" parameterType="CommentVO">
+        UPDATE TBL_COMMENT
+        SET COMMENT_CONTENT = #{commentContent}
+        WHERE ID = #{id} AND USER_ID = #{userId} AND COMMENT_IS_DELETED = 0
+    </update>
+
+    <update id="updateIsDeleted" parameterType="CommentVO">
+        UPDATE TBL_COMMENT
+        SET COMMENT_IS_DELETED = 1
+        WHERE ID = #{id} AND USER_ID = #{userId}
+    </update>
+
+    <update id="updateRepliesIsDeleted" parameterType="Long">
+        UPDATE TBL_COMMENT
+        SET COMMENT_IS_DELETED = 1
+        WHERE COMMENT_ID = #{commentId}
+    </update>
+
+    <select id="isParentComment" parameterType="Long" resultType="int">
+        SELECT COUNT(*)
+        FROM TBL_COMMENT
+        WHERE ID = #{commentId} AND COMMENT_ID IS NULL AND COMMENT_IS_DELETED = 0
+    </select>
+
+</mapper>
