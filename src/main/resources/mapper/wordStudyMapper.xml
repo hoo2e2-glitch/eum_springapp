@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.app.springapp.mapper.TimeMapper">
+
+    <select id="selectByUserIdAndEduWordMapId" parameterType="WordStudyRequestDTO" resultType="WordStudyResponseDTO">
+        SELECT
+            ID AS id,
+            WORD_STUDY_CREATE_AT AS wordStudyCreateAt,
+            WORD_STUDY_UPDATE_AT AS wordStudyUpdateAt,
+            WORD_STUDY_IS_COMPLETED AS wordStudyIsCompleted,
+            EDU_WORD_MAP_ID AS eduWordMapId,
+            USER_ID AS userId
+        FROM TBL_WORD_STUDY
+        WHERE USER_ID = #{userId}
+          AND EDU_WORD_MAP_ID = #{eduWordMapId}
+    </select>
+
+    <insert id="insert" parameterType="WordStudyRequestDTO">
+        <selectKey resultType="Long" keyProperty="id" order="BEFORE">
+            SELECT SEQ_WORD_STUDY.NEXTVAL FROM DUAL
+        </selectKey>
+
+        INSERT INTO TBL_WORD_STUDY (
+        ID,
+        WORD_STUDY_IS_COMPLETED,
+        EDU_WORD_MAP_ID,
+        USER_ID
+        ) VALUES (
+        #{id},
+        #{wordStudyIsCompleted},
+        #{eduWordMapId},
+        #{userId}
+        )
+    </insert>
+
+    <update id="updateComplete" parameterType="WordStudyRequestDTO">
+        UPDATE TBL_WORD_STUDY
+        SET
+            WORD_STUDY_IS_COMPLETED = #{wordStudyIsCompleted},
+            WORD_STUDY_UPDATE_AT = CURRENT_TIMESTAMP
+        WHERE USER_ID = #{userId}
+          AND EDU_WORD_MAP_ID = #{eduWordMapId}
+    </update>
+
+    <select id="countCompletedByEduId" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+        FROM TBL_WORD_STUDY WS
+                 JOIN TBL_EDU_WORD_MAP EWM
+                      ON WS.EDU_WORD_MAP_ID = EWM.ID
+        WHERE WS.USER_ID = #{userId}
+          AND EWM.EDU_ID = #{eduId}
+          AND WS.WORD_STUDY_IS_COMPLETED = 1
+    </select>
+
+
+
+</mapper>

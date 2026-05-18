@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.app.springapp.mapper.TimeMapper">
+
+    <select id="selectByEduId" parameterType="Long" resultType="WordsResponseDTO">
+        SELECT
+            W.ID AS id,
+            W.WORDS_TITLE AS wordsTitle,
+            W.WORDS_DETAIL AS wordsDetail,
+            W.WORDS_IMAGE AS wordsImage,
+            W.WORDS_TYPE AS wordsType,
+            W.EDU_VIDEO_ID AS eduVideoId
+        FROM TBL_EDU_WORD_MAP EWM
+                 JOIN TBL_WORDS W
+                      ON EWM.WORDS_ID = W.ID
+        WHERE EWM.EDU_ID = #{eduId}
+        ORDER BY EWM.ID ASC
+    </select>
+
+    <select id="select" parameterType="Long" resultType="WordsResponseDTO">
+        SELECT
+            ID AS id,
+            WORDS_TITLE AS wordsTitle,
+            WORDS_DETAIL AS wordsDetail,
+            WORDS_IMAGE AS wordsImage,
+            WORDS_TYPE AS wordsType,
+            EDU_VIDEO_ID AS eduVideoId
+        FROM TBL_WORDS
+        WHERE ID = #{id}
+    </select>
+
+</mapper>
