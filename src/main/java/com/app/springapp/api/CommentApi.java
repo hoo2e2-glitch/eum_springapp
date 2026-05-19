@@ -45,6 +45,28 @@ public class CommentApi {
                 .body(ApiResponseDTO.of(true, "댓글 불러오기 성공", comments));
     }
 
+//    유저가 작성한 게시글 불러오기
+    @GetMapping("/users/{userId}")
+    @Operation(description = "유저가 작성 한 댓글 조회")
+    @ApiResponse(responseCode = "200", description = "유저 작성 댓글 조회 성공")
+    @ApiResponse(responseCode = "400", description = "유저 작성 댓글 조회 실패 (잘못된 요청)")
+    @Parameter(
+            name = "userId",
+            description = "유저 아이디",
+            example = "1",
+            required = true,
+            in = ParameterIn.PATH,
+            schema = @Schema(type = "number")
+    )
+    public ResponseEntity<ApiResponseDTO> getUserWrittenComments(
+            @PathVariable Long userId
+    ){
+        List<CommentResponseDTO> comments = commentService.getUserWrittenComments(userId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponseDTO.of(true, "유저 작성 댓글 불러오기 성공", comments));
+    }
+
 //    게시글 내 댓글 작성
     @PostMapping("/{postId}")
     @Operation(description = "게시글 내 댓글 작성")

@@ -10,6 +10,9 @@ import java.util.List;
 public interface CommentMapper {
     public List<CommentDTO> selectAllByPostId(Long postId);
 
+//    유저가 작성한 댓글 불러오기
+    public List<CommentDTO> selectAllByUserId(Long userId);
+
     public void insert(CommentVO commentVO);
 
     public int existByIdAndPostId(CommentVO commentVO);

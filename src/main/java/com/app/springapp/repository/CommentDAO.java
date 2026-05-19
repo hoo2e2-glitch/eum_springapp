@@ -13,10 +13,17 @@ import java.util.List;
 public class CommentDAO {
     private final CommentMapper commentMapper;
 
+//    게시글에 작성 된 댓글 조회
     public List<CommentDTO> findAllByPostId(Long postId){
         return commentMapper.selectAllByPostId(postId);
     }
 
+//    유저가 작성 한 댓글 조회
+    public List<CommentDTO> findAllByUserId(Long userId){
+        return commentMapper.selectAllByUserId(userId);
+    }
+
+//    댓글 작성
     public void save(CommentVO commentVO){
         commentMapper.insert(commentVO);
     }

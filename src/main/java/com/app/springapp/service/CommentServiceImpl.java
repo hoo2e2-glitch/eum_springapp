@@ -33,6 +33,15 @@ public class CommentServiceImpl implements CommentService {
                 .collect(Collectors.toList());
     }
 
+//    유저가 작성 한 댓글 목록 불러오기
+    @Override
+    public List<CommentResponseDTO> getUserWrittenComments(Long userId) {
+        return commentDAO.findAllByUserId(userId)
+                .stream()
+                .map(CommentResponseDTO::from)
+                .collect(Collectors.toList());
+    }
+
     @Override
     public void writePostComment(Long postId, CommentRequestDTO commentRequestDTO) {
         Long userId = communityAuthService.getUserId();

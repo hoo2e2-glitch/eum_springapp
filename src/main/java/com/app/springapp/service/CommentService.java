@@ -8,6 +8,9 @@ import java.util.List;
 public interface CommentService {
     public List<CommentResponseDTO> getAllPostComments(Long postId);
 
+//    유저가 남긴 댓글 조회
+    public List<CommentResponseDTO> getUserWrittenComments(Long userID);
+
     public void writePostComment(Long postId, CommentRequestDTO commentRequestDTO);
 
     public void writePostReply(Long postId, Long commentId, CommentRequestDTO commentRequestDTO);

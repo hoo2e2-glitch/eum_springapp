@@ -25,6 +25,15 @@ public class CommentServiceTest {
         });
     }
 
+//    유저 작성 댓글 불러오기 테스트
+    @Test
+    public void getUserWrittenCommentsTest(){
+        Long userId = 1L;
+        List<CommentResponseDTO> comments = commentService.getUserWrittenComments(userId);
+        comments.stream()
+                .forEach(comment -> {log.info(comment.toString());});
+    }
+
 //    게시글에 댓글 달기 테스트
     @Test
     public void writePostCommentTest(){
