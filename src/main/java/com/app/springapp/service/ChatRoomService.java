@@ -21,7 +21,7 @@ public interface ChatRoomService {
     public List<ChatUserResponseDTO> getChatRoomUsers(Long chatRoomId);
 
 //    사용자가 참여 중인 채팅방 페이지네이션 조회
-    public List<ChatRoomResponseDTO> getJoinedChatRooms(Map<String, Object> filters);
+    public Map<String, Object> getJoinedChatRooms(int page);
 
 //    채팅방 정보 수정
 

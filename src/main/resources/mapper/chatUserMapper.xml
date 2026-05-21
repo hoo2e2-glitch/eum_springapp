@@ -19,4 +19,10 @@
         WHERE TCU.CHAT_ROOM_ID = #{chatRoomId}
     </select>
 
+    <select id="countByUserId" parameterType="Long" resultType="int">
+        SELECT COUNT(*)
+        FROM TBL_CHAT_USER
+        WHERE USER_ID = #{userId}
+    </select>
+
 </mapper>

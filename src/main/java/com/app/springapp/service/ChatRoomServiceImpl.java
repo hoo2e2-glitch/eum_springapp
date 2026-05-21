@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -24,7 +25,9 @@ import java.util.stream.Collectors;
 public class ChatRoomServiceImpl implements ChatRoomService {
     private final ChatUserDAO chatMemberDAO;
     private final ChatRoomDAO chatRoomDAO;
+    private final ChatUserDAO chatUserDAO;
     private final CommunityAuthService communityAuthService;
+    private final PostService postService;
 
     //    채팅방 방 생성
     @Override
@@ -71,10 +74,32 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
 //    사용자가 참여 중인 채팅방 페이지네이션 조회
     @Override
-    public List<ChatRoomResponseDTO> getJoinedChatRooms(Map<String, Object> filters) {
-        return chatRoomDAO.findByUserId(filters)
+    public Map<String, Object> getJoinedChatRooms(int page) {
+        Map<String, Object> filters = new HashMap<>();
+        int size = 10;
+        int offset = (page - 1) * size;
+        Long userId = communityAuthService.getUserId();
+        communityAuthService.checkUserValidity(userId);
+        filters.put("offset", offset);
+        filters.put("size", size);
+        filters.put("userId", userId);
+
+//        결과
+        Map<String, Object> result = new HashMap<>();
+
+        List<ChatRoomResponseDTO> rooms = chatRoomDAO.findByUserId(filters)
                 .stream()
                 .map(ChatRoomResponseDTO::from)
                 .collect(Collectors.toList());
+        int roomCounts = chatUserDAO.countByUserId(userId);
+
+        result.put("rooms", rooms);
+        result.put("currentPage", page);
+        result.put("totalPages", postService.calcTotalPages(roomCounts, size));
+        result.put("size", size);
+        result.put("roomCounts", roomCounts);
+
+
+        return result;
     }
 }

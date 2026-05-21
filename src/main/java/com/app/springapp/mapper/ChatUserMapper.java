@@ -13,4 +13,7 @@ public interface ChatUserMapper {
 
 //    채팅방에 참여 중인 유저 반환
     public List<ChatUserDTO> selectByChatRoomId(Long chatRoomId);
+
+//    사용자가 참여 중인 채팅방 갯수
+    public int countByUserId(Long userId);
 }

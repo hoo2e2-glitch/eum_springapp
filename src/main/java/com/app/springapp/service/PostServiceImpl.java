@@ -49,7 +49,7 @@ public class PostServiceImpl implements PostService {
         Map<String, Object> result = new HashMap<>();
         result.put("posts", posts);
         result.put("currentPage", page);
-        result.put("totalPages", calcTotalPages(postCounts, size));
+        result.put("totalPages", this.calcTotalPages(postCounts, size));
         result.put("size", size);
         result.put("postCounts", postCounts);
 
@@ -97,7 +97,7 @@ public class PostServiceImpl implements PostService {
         Map<String, Object> result = new HashMap<>();
         result.put("posts", posts);
         result.put("currentPage", page);
-        result.put("totalPages", calcTotalPages(postCounts, size));
+        result.put("totalPages", this.calcTotalPages(postCounts, size));
         result.put("size", size);
         result.put("postCounts", postCounts);
 
@@ -125,7 +125,7 @@ public class PostServiceImpl implements PostService {
         Map<String, Object> result = new HashMap<>();
         result.put("posts", posts);
         result.put("currentPage", page);
-        result.put("totalPages", calcTotalPages(postCounts, size));
+        result.put("totalPages", this.calcTotalPages(postCounts, size));
         result.put("size", size);
         result.put("postCounts", postCounts);
 
@@ -173,7 +173,8 @@ public class PostServiceImpl implements PostService {
         }
     }
 
-    private int calcTotalPages(int totalCount, int size) {
+    @Override
+    public int calcTotalPages(int totalCount, int size) {
         return (int) Math.ceil((double) totalCount / size);
     }
 

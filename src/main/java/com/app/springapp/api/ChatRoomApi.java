@@ -16,7 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -84,5 +86,26 @@ public class ChatRoomApi {
     }
 
 //    현재 내가 채팅중인 채팅방 불러오기
+    @GetMapping("/joined")
+    @Operation(description = "사용자가 진행중인 채팅방 불러오기")
+    @ApiResponse(responseCode = "200", description = "사용자가 진행중인 채팅방 불러오기 성공")
+    @ApiResponse(responseCode = "400", description = "사용자가 진행중인 채팅방 불러오기 실패")
+    @Parameter(
+            name = "page",
+            description = "페이지 번호",
+            example = "1",
+            required = true,
+            in = ParameterIn.QUERY,
+            schema = @Schema(type = "number")
+    )
+    public ResponseEntity<ApiResponseDTO> getJoinedChatRooms(
+            @RequestParam(defaultValue = "1") int page
+    ){
+        Map<String, Object> result = new HashMap<>();
+        result = chatRoomService.getJoinedChatRooms(page);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponseDTO.of(true, "사용자 참여 채팅방 로드 성공", result));
+    }
 
 }

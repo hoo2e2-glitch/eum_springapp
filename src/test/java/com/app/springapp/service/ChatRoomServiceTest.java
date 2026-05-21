@@ -65,10 +65,7 @@ public class ChatRoomServiceTest {
         filters.put("offset", 0);
         filters.put("size", 10);
 
-        chatRoomService.getJoinedChatRooms(filters)
-                .stream()
-                .forEach((joinedChatRoom) -> {
-                    log.info(joinedChatRoom.toString());
-                });
+        Map<String, Object> result = chatRoomService.getJoinedChatRooms(1);
+        log.info(result.toString());
     }
 }

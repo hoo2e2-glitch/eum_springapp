@@ -39,4 +39,7 @@ public interface PostService {
 
 //    게시글 좋아요 삭제
     public void cancelPostLike(Long postId);
+
+//    페이지 계산
+    public int calcTotalPages(int totalCount, int size);
 }
