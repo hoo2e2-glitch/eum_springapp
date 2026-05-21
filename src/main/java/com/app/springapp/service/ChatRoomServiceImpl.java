@@ -3,6 +3,7 @@ package com.app.springapp.service;
 import com.app.springapp.domain.dto.ChatUserDTO;
 import com.app.springapp.domain.dto.request.ChatRoomRequestDTO;
 import com.app.springapp.domain.dto.response.ChatRoomResponseDTO;
+import com.app.springapp.domain.dto.response.ChatRoomUserResponseDTO;
 import com.app.springapp.domain.dto.response.ChatUserResponseDTO;
 import com.app.springapp.domain.vo.ChatUserVO;
 import com.app.springapp.domain.vo.ChatRoomVO;
@@ -87,9 +88,9 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 //        결과
         Map<String, Object> result = new HashMap<>();
 
-        List<ChatRoomResponseDTO> rooms = chatRoomDAO.findByUserId(filters)
+        List<ChatRoomUserResponseDTO> rooms = chatRoomDAO.findByUserId(filters)
                 .stream()
-                .map(ChatRoomResponseDTO::from)
+                .map(ChatRoomUserResponseDTO::from)
                 .collect(Collectors.toList());
         int roomCounts = chatUserDAO.countByUserId(userId);
 

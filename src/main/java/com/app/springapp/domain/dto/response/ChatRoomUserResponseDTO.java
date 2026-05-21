@@ -43,6 +43,7 @@ public class ChatRoomUserResponseDTO {
         chatRoomUserResponseDTO.setChatRoomLimit(chatRoomDTO.getChatRoomLimit());
         chatRoomUserResponseDTO.setChatRoomUsers(chatRoomDTO.getChatRoomUsers());
         chatRoomUserResponseDTO.setChatStartAt(chatRoomDTO.getChatStartAt());
+        chatRoomUserResponseDTO.setChatLastReadAt(chatRoomDTO.getChatLastReadAt());
 
         return chatRoomUserResponseDTO;
     }
