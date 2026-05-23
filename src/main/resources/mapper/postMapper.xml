@@ -59,7 +59,14 @@
             NVL(COMMENT_COUNT, 0) AS COMMENT_COUNT
         FROM VW_POST_SUMMARY
         WHERE USER_ID = #{userId} AND POST_IS_DELETED = 0
-        ORDER BY ID DESC
+        <choose>
+            <when test="order != null and order == 'likeCount'">
+                ORDER BY LIKE_COUNT DESC
+            </when>
+            <otherwise>
+                ORDER BY ID DESC
+            </otherwise>
+        </choose>
         OFFSET #{offset} ROWS FETCH NEXT #{size} ROWS ONLY
     </select>
 
