@@ -97,10 +97,19 @@ public class PostApi {
             in = ParameterIn.QUERY,
             schema = @Schema(type = "string")
     )
+    @Parameter(
+            name = "keyword",
+            description = "게시글 부분 검색 키워드",
+            example = "수어",
+            required = false,
+            in = ParameterIn.QUERY,
+            schema = @Schema(type = "string")
+    )
     public ResponseEntity<ApiResponseDTO> getPostByUserId(
             @PathVariable Long userId,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "latest") String order
+            @RequestParam(defaultValue = "latest") String order,
+            @RequestParam(defaultValue = "") String keyword
     ){
 //        유저 아이디는 추후 실제로 불러와질 수 있을 때 정하기
 //        Long userId = 1L;
@@ -108,6 +117,7 @@ public class PostApi {
         Map<String, Object> result = new HashMap<>();
         req.put("page", page);
         req.put("order", order);
+        req.put("keyword", keyword);
 
         result = postService.getUserPosts(userId, req);
         return ResponseEntity
@@ -144,14 +154,24 @@ public class PostApi {
             in = ParameterIn.QUERY,
             schema = @Schema(type = "string")
     )
+    @Parameter(
+            name = "keyword",
+            description = "게시글 부분 검색 키워드",
+            example = "수어",
+            required = false,
+            in = ParameterIn.QUERY,
+            schema = @Schema(type = "string")
+    )
     public ResponseEntity<ApiResponseDTO> getPostLikedByUserId(
             @PathVariable Long userId,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "latest") String order
+            @RequestParam(defaultValue = "latest") String order,
+            @RequestParam(defaultValue = "") String keyword
     ){
         Map<String, Object> req = new HashMap<>();
         req.put("page", page);
         req.put("order", order);
+        req.put("keyword", keyword);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponseDTO.of(true, "유저 좋아요 게시글 로드 성공", postService.getUserLikedPosts(userId, req)));

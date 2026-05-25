@@ -83,12 +83,14 @@ public class PostServiceImpl implements PostService {
         int size = 4;
         int offset = (page - 1) * size;
         String order =  (String) req.get("order");
+        String keyword = (String) req.get("keyword");
 
         Map<String, Object> filters = new HashMap<>();
         filters.put("size", size);
         filters.put("offset", offset);
         filters.put("userId", userId);
         filters.put("order", order);
+        filters.put("keyword", keyword);
 
         List<PostResponseDTO> posts = postDAO.findByUserId(filters).stream()
                 .map(PostResponseDTO::from)
@@ -113,12 +115,14 @@ public class PostServiceImpl implements PostService {
         int size = 4;
         int offset = (page - 1) * size;
         String order =  (String) req.get("order");
+        String keyword = (String) req.get("keyword");
 
         Map<String, Object> filters = new HashMap<>();
         filters.put("size", size);
         filters.put("offset", offset);
         filters.put("userId", userId);
         filters.put("order", order);
+        filters.put("keyword", keyword);
 
         List<PostResponseDTO> posts = postDAO.findByUserPostLike(filters).stream()
                 .map(PostResponseDTO::from)

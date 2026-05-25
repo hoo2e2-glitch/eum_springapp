@@ -40,6 +40,11 @@
         FROM TBL_POST_LIKE TPL
         JOIN VW_POST_SUMMARY VPS ON VPS.ID = TPL.POST_ID
         WHERE TPL.USER_ID = #{userId} AND VPS.POST_IS_DELETED = 0
+        <if test="keyword != null and keyword != ''">
+            AND (POST_TITLE LIKE '%' || #{keyword} || '%'
+            OR POST_CONTENT LIKE '%' || #{keyword} || '%'
+            OR USER_NICKNAME LIKE '%' || #{keyword} || '%')
+        </if>
         <choose>
             <when test="order != null and order == 'popular'">
                 ORDER BY LIKE_COUNT DESC
@@ -66,6 +71,11 @@
             NVL(COMMENT_COUNT, 0) AS COMMENT_COUNT
         FROM VW_POST_SUMMARY
         WHERE USER_ID = #{userId} AND POST_IS_DELETED = 0
+        <if test="keyword != null and keyword != ''">
+            AND (POST_TITLE LIKE '%' || #{keyword} || '%'
+              OR POST_CONTENT LIKE '%' || #{keyword} || '%'
+              OR USER_NICKNAME LIKE '%' || #{keyword} || '%')
+        </if>
         <choose>
             <when test="order != null and order == 'popular'">
                 ORDER BY LIKE_COUNT DESC
