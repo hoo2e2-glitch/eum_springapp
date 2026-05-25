@@ -179,7 +179,7 @@ public class PostApi {
 
 //    게시글 작성
     @PostMapping("")
-    @Operation(description = "게시글 작성하기")
+    @Operation(summary = "게시글 작성", description = "게시글 작성하기")
     @ApiResponse(responseCode = "201", description = "게시글 작성 성공")
     @ApiResponse(responseCode = "400", description = "게시글 작성 실패 (잘못된 요청)")
     public ResponseEntity<ApiResponseDTO> writePost(
