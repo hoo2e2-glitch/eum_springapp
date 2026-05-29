@@ -34,11 +34,13 @@ public class PostServiceImpl implements PostService {
         int size = 4;
         int offset = (page - 1) * size;
         String postTag = (String) req.get("postTag");
+        String keyword = (String) req.get("keyword");
 
         Map<String, Object> filters = new HashMap<>();
         filters.put("size", size);
         filters.put("offset", offset);
         filters.put("postTag", postTag);
+        filters.put("keyword", keyword);
 
         List<PostResponseDTO> posts = postDAO.findAll(filters).stream()
                 .map(PostResponseDTO::from)

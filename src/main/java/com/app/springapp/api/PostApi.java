@@ -22,7 +22,7 @@ import java.util.Map;
 public class PostApi {
     private final PostService postService;
 
-//    전체 포스트 가져오는거 정의
+//    전체 포스트 가져오는거 정의 (페이지네이션 적용)
     @GetMapping("")
     @Operation(summary = "포스트 로드", description = "게시글 전체 로드")
     @ApiResponse(responseCode = "200", description = "게시글 목록 로드 성공")
@@ -35,13 +35,23 @@ public class PostApi {
             in = ParameterIn.QUERY,
             schema = @Schema(type = "String")
     )
+    @Parameter(
+            name = "keyword",
+            description = "게시글 검색 키워드",
+            example = "수어 공부",
+            required = false,
+            in = ParameterIn.QUERY,
+            schema = @Schema(type = "String")
+    )
     public ResponseEntity<ApiResponseDTO> getAllPosts(
             @RequestParam(required = false, defaultValue = "") String postTag,
-            @RequestParam(defaultValue = "1") int page
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(required = false, defaultValue = "") String keyword
     ){
         Map<String,Object> map = new HashMap<>();
         map.put("postTag",postTag);
         map.put("page",page);
+        map.put("keyword",keyword);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponseDTO.of(true, "게시글 목록 불러오기 성공", postService.getAllPosts(map)));
