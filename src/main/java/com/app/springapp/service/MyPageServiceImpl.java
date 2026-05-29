@@ -383,6 +383,7 @@ public class MyPageServiceImpl implements MyPageService {
         myPageDAO.deleteNotificationByWithdrawUserId(userId);
         myPageDAO.deleteAiChatByWithdrawUserId(userId);
         myPageDAO.deleteInquireByWithdrawUserId(userId);
+        myPageDAO.deleteReportResultByWithdrawUserId(userId);
         myPageDAO.deleteReportByWithdrawUserId(userId);
 
         myPageDAO.deleteChatRoomReportByWithdrawUserId(userId);

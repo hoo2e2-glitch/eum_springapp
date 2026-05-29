@@ -213,30 +213,38 @@
         DELETE FROM TBL_COMMENT_LIKE
         WHERE USER_ID = #{userId}
            OR COMMENT_ID IN (
-            SELECT TC.ID
-            FROM TBL_COMMENT TC
-            WHERE TC.USER_ID = #{userId}
-               OR TC.POST_ID IN (SELECT TP.ID FROM TBL_POST TP WHERE TP.USER_ID = #{userId})
-        )
+            SELECT ID
+            FROM TBL_COMMENT
+                     START WITH USER_ID = #{userId}
+            OR POST_ID IN (SELECT ID FROM TBL_POST WHERE USER_ID = #{userId})
+        CONNECT BY PRIOR ID = COMMENT_ID
+            )
     </delete>
+
 
     <!-- 회원이 신고했거나 회원 게시글/댓글에 연결된 댓글 신고 삭제 -->
     <delete id="deleteCommentReportByWithdrawUserId" parameterType="Long">
         DELETE FROM TBL_COMMENT_REPORT
         WHERE USER_ID = #{userId}
            OR COMMENT_ID IN (
-            SELECT TC.ID
-            FROM TBL_COMMENT TC
-            WHERE TC.USER_ID = #{userId}
-               OR TC.POST_ID IN (SELECT TP.ID FROM TBL_POST TP WHERE TP.USER_ID = #{userId})
-        )
+            SELECT ID
+            FROM TBL_COMMENT
+                     START WITH USER_ID = #{userId}
+            OR POST_ID IN (SELECT ID FROM TBL_POST WHERE USER_ID = #{userId})
+        CONNECT BY PRIOR ID = COMMENT_ID
+            )
     </delete>
 
     <!-- 회원 댓글 및 회원 게시글에 달린 댓글 삭제 -->
     <delete id="deleteCommentByWithdrawUserId" parameterType="Long">
         DELETE FROM TBL_COMMENT
-        WHERE USER_ID = #{userId}
-           OR POST_ID IN (SELECT ID FROM TBL_POST WHERE USER_ID = #{userId})
+        WHERE ID IN (
+            SELECT ID
+            FROM TBL_COMMENT
+                     START WITH USER_ID = #{userId}
+            OR POST_ID IN (SELECT ID FROM TBL_POST WHERE USER_ID = #{userId})
+        CONNECT BY PRIOR ID = COMMENT_ID
+            )
     </delete>
 
     <!-- 회원이 누른 좋아요 및 회원 게시글 좋아요 삭제 -->
@@ -386,6 +394,16 @@
     <delete id="deleteInquireByWithdrawUserId" parameterType="Long">
         DELETE FROM TBL_INQUIRE
         WHERE USER_ID = #{userId}
+    </delete>
+
+    <!-- 통합 신고 처리 결과 삭제 -->
+    <delete id="deleteReportResultByWithdrawUserId" parameterType="Long">
+        DELETE FROM TBL_REPORT_RESULT
+        WHERE REPORT_ID IN (
+            SELECT ID
+            FROM TBL_REPORT
+            WHERE USER_ID = #{userId}
+        )
     </delete>
 
     <!-- 통합 신고 기록 삭제 -->

@@ -150,6 +150,9 @@ public interface MyPageMapper {
     //    문의 기록 삭제
     void deleteInquireByWithdrawUserId(Long userId);
 
+    //    통합 신고 처리 결과 삭제
+    void deleteReportResultByWithdrawUserId(Long userId);
+
     //    통합 신고 기록 삭제
     void deleteReportByWithdrawUserId(Long userId);
 

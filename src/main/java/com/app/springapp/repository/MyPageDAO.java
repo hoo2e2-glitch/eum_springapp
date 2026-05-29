@@ -240,6 +240,11 @@ public class MyPageDAO {
         myPageMapper.deleteInquireByWithdrawUserId(userId);
     }
 
+    //    통합 신고 처리 결과 삭제
+    public void deleteReportResultByWithdrawUserId(Long userId) {
+        myPageMapper.deleteReportResultByWithdrawUserId(userId);
+    }
+
     //    통합 신고 기록 삭제
     public void deleteReportByWithdrawUserId(Long userId) {
         myPageMapper.deleteReportByWithdrawUserId(userId);

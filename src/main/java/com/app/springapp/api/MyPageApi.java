@@ -2,11 +2,14 @@ package com.app.springapp.api;
 
 import com.app.springapp.domain.dto.UserDTO;
 import com.app.springapp.domain.dto.request.MyPageEditRequestDTO;
+import com.app.springapp.domain.dto.request.MyPageWithdrawRequestDTO;
 import com.app.springapp.domain.dto.response.ApiResponseDTO;
 import com.app.springapp.service.MyPageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -139,5 +142,42 @@ public class MyPageApi {
         return ResponseEntity.ok(
                 ApiResponseDTO.of(true, "비밀번호 변경 성공")
         );
+    }
+
+    //    회원탈퇴
+    @DeleteMapping("/withdraw")
+    @Operation(summary = "회원탈퇴", description = "탈퇴 사유 저장 후 회원 관련 데이터를 실제 삭제합니다.")
+    @ApiResponse(responseCode = "200", description = "회원탈퇴 성공")
+    public ResponseEntity<ApiResponseDTO> withdrawUser(
+            @RequestBody MyPageWithdrawRequestDTO requestDTO,
+            Authentication authentication
+    ) {
+        UserDTO userDTO = (UserDTO) authentication.getPrincipal();
+
+        myPageService.withdrawUser(requestDTO, userDTO.getId());
+
+        // 탈퇴 후 인증 쿠키 제거
+        ResponseCookie accessTokenCookie = ResponseCookie
+                .from("accessToken", "")
+                .httpOnly(true)
+                .sameSite("Lax")
+                .path("/")
+                .secure(false)
+                .maxAge(0)
+                .build();
+
+        ResponseCookie refreshTokenCookie = ResponseCookie
+                .from("refreshToken", "")
+                .httpOnly(true)
+                .sameSite("Lax")
+                .path("/")
+                .secure(false)
+                .maxAge(0)
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
+                .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
+                .body(ApiResponseDTO.of(true, "회원탈퇴 성공"));
     }
 }
