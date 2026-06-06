@@ -7,6 +7,7 @@ import com.app.springapp.domain.vo.CommentVO;
 import com.app.springapp.exception.CommentException;
 import com.app.springapp.repository.CommentDAO;
 import com.app.springapp.repository.CommentLikeDAO;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -24,7 +25,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CommentServiceImpl implements CommentService {
     private final CommentDAO commentDAO;
-    private final CommunityAuthService communityAuthService;
     private final CommentLikeDAO commentLikeDAO;
     private final UserExpService userExpService;
 
@@ -76,10 +76,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void writePostComment(Long postId, CommentRequestDTO commentRequestDTO) {
-        Long userId = communityAuthService.getUserId();
-        communityAuthService.checkUserValidity(userId);
-
+    public void writePostComment(Long postId, Long userId, CommentRequestDTO commentRequestDTO) {
         CommentVO commentVO = CommentVO.from(commentRequestDTO);
         commentVO.setPostId(postId);
         commentVO.setUserId(userId);
@@ -95,10 +92,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void writePostReply(Long postId, Long commentId, CommentRequestDTO commentRequestDTO) {
-        Long userId = communityAuthService.getUserId();
-        communityAuthService.checkUserValidity(userId);
-
+    public void writePostReply(Long postId, Long commentId, Long userId, CommentRequestDTO commentRequestDTO) {
         CommentVO parentCheck = new CommentVO();
         parentCheck.setId(commentId);
         parentCheck.setPostId(postId);
@@ -123,9 +117,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void updateComment(Long commentId, CommentRequestDTO commentRequestDTO) {
-        Long userId = communityAuthService.getUserId();
-
+    public void updateComment(Long commentId, Long userId, CommentRequestDTO commentRequestDTO) {
         CommentVO commentVO = new CommentVO();
         commentVO.setId(commentId);
         commentVO.setUserId(userId);
@@ -139,9 +131,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void deleteComment(Long commentId) {
-        Long userId = communityAuthService.getUserId();
-
+    public void deleteComment(Long commentId, Long userId) {
         CommentVO commentVO = new CommentVO();
         commentVO.setId(commentId);
         commentVO.setUserId(userId);
@@ -160,10 +150,7 @@ public class CommentServiceImpl implements CommentService {
 
 //    댓글 좋아요 남기기
     @Override
-    public void addCommentLike(Long commentId) {
-        Long userId = communityAuthService.getUserId();
-        communityAuthService.checkUserValidity(userId);
-
+    public void addCommentLike(Long commentId, Long userId) {
         CommentLikeVO  commentLikeVO = new CommentLikeVO();
         commentLikeVO.setCommentId(commentId);
         commentLikeVO.setUserId(userId);
@@ -177,10 +164,7 @@ public class CommentServiceImpl implements CommentService {
 
 //    좋아요 취소
     @Override
-    public void cancelCommentLike(Long commentId) {
-        Long userId = communityAuthService.getUserId();
-        communityAuthService.checkUserValidity(userId);
-
+    public void cancelCommentLike(Long commentId, Long userId) {
 //        DAO 에 전달 할 VO 제작
         CommentLikeVO commentLikeVO = new CommentLikeVO();
         commentLikeVO.setCommentId(commentId);
