@@ -16,9 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -72,11 +70,7 @@ public class PrivateChatApi {
         UserDTO userDTO = (UserDTO) authentication.getPrincipal();
         Long userId = userDTO.getId();
 
-        Map<String,Object> req = new HashMap<>();
-        req.put("chatRoomId", chatRoomId);
-        req.put("userId", userId);
-
-        chatService.writeChatMessage(req, chatRequestDTO);
+        chatService.writeChatMessage(chatRoomId, userId, chatRequestDTO);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponseDTO.of(true, "메세지 작성 성공"));

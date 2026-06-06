@@ -21,10 +21,10 @@ public interface ChatService {
     public ChatDTO playRealTimeChat(Long chatRoomId, ChatRequestDTO chatRequestDTO);
 
 //    채팅방 내 메세지 작성
-    public Long writeChatMessage(Map<String, Object> req, ChatRequestDTO chatRequestDTO);
+    public Long writeChatMessage(Long chatRoomId, Long userId, ChatRequestDTO chatRequestDTO);
 
 //    유저가 채팅방 남긴 이력 확인 (해당 방에 참여가 되어 있는지 , 메세지 기준으로)
-    public boolean isUserInChatRoom(Map<String, Object> req);
+    public boolean isUserInChatRoom(Long chatRoomId, Long userId);
 
 //    모든 채팅방들을 불러와주기 (페이지네이션)
     public Map<String, Object> loadAllChatRoom(Map<String, Object> req);
