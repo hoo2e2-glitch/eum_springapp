@@ -11,7 +11,7 @@ public interface PostService {
     public Map<String, Object> getAllPosts(Map<String, Object> filters);
 
 //    특정 게시글 불러오기
-    public PostSelectResponseDTO getPost(Long id);
+    public PostSelectResponseDTO getPost(Long id, Long userId);
 
 //    유저가 작성 한 게시글들 불러오기
     public Map<String, Object> getUserPosts(Long userId, Map<String, Object> filters);

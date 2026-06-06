@@ -63,9 +63,7 @@ public class PostServiceImpl implements PostService {
 
 //    특정 게시글 조회
     @Override
-    public PostSelectResponseDTO getPost(Long id) {
-        Long userId = communityAuthService.getUserId();
-
+    public PostSelectResponseDTO getPost(Long id, Long userId) {
         PostDTO postDTO = new PostDTO();
         postDTO.setId(id);
         postDTO.setUserId(userId);

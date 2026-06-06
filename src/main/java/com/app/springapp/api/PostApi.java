@@ -3,6 +3,8 @@ package com.app.springapp.api;
 import com.app.springapp.domain.dto.request.PostRequestDTO;
 import com.app.springapp.domain.dto.response.ApiResponseDTO;
 import com.app.springapp.service.PostService;
+import com.app.springapp.util.JwtTokenUtil;
+import io.jsonwebtoken.Claims;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -21,6 +23,7 @@ import java.util.Map;
 @RequestMapping("/api/posts")
 public class PostApi {
     private final PostService postService;
+    private final JwtTokenUtil jwtTokenUtil;
 
 //    전체 포스트 가져오는거 정의 (페이지네이션 적용)
     @GetMapping("")
@@ -71,11 +74,21 @@ public class PostApi {
             schema = @Schema(type = "number")
     )
     public ResponseEntity<ApiResponseDTO> getPostById(
-            @PathVariable Long id
+            @PathVariable Long id,
+            @CookieValue(value = "accessToken", required = false) String accessToken
     ) {
+        Long userId = null;
+        if (accessToken != null) {
+            try {
+                Claims claims = jwtTokenUtil.parseToken(accessToken);
+                userId = Long.parseLong((String) claims.get("id"));
+            } catch (Exception e) {
+                // 토큰이 유효하지 않으면 비로그인으로 처리
+            }
+        }
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(ApiResponseDTO.of(true, "포스트 로드 성공", postService.getPost(id)));
+                .body(ApiResponseDTO.of(true, "포스트 로드 성공", postService.getPost(id, userId)));
     }
 
 //    유저 프로필에서 게시글 가져오기
