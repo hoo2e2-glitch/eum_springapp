@@ -1,6 +1,5 @@
 package com.app.springapp.api;
 
-import com.app.springapp.domain.dto.request.PostRequestDTO;
 import com.app.springapp.domain.dto.response.ApiResponseDTO;
 import com.app.springapp.service.PostService;
 import com.app.springapp.util.JwtTokenUtil;
@@ -18,12 +17,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/posts")
 public class PostApi {
     private final PostService postService;
     private final JwtTokenUtil jwtTokenUtil;
+
 
 //    전체 포스트 가져오는거 정의 (페이지네이션 적용)
     @GetMapping("")
@@ -200,98 +201,4 @@ public class PostApi {
                 .body(ApiResponseDTO.of(true, "유저 좋아요 게시글 로드 성공", postService.getUserLikedPosts(userId, req)));
     }
 
-//    게시글 작성
-    @PostMapping("")
-    @Operation(summary = "게시글 작성", description = "게시글 작성하기")
-    @ApiResponse(responseCode = "201", description = "게시글 작성 성공")
-    @ApiResponse(responseCode = "400", description = "게시글 작성 실패 (잘못된 요청)")
-    public ResponseEntity<ApiResponseDTO> writePost(
-            @RequestBody PostRequestDTO postRequestDTO
-    ){
-        postService.writePost(postRequestDTO);
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(ApiResponseDTO.of(true, "게시글 작성 성공"));
-    }
-
-//    게시글 수정
-    @PutMapping("/{id}")
-    @Operation(summary = "게시글 수정", description = "게시글 수정하기")
-    @ApiResponse(responseCode = "200", description = "게시글 수정 성공")
-    @ApiResponse(responseCode = "400", description = "해당 게시글 수정 권한 없습니다.")
-    public ResponseEntity<ApiResponseDTO> updatePost(
-            @PathVariable Long id,
-            @RequestBody PostRequestDTO postRequestDTO
-    ){
-        postService.updatePost(id, postRequestDTO);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ApiResponseDTO.of(true, "게시글 수정 성공"));
-    }
-
-//    게시글 삭제
-    @DeleteMapping("/{id}")
-    @Operation(summary = "게시글 삭제", description = "게시글 소프트 삭제")
-    @ApiResponse(responseCode = "204", description = "게시글 삭제 성공")
-    @ApiResponse(responseCode = "400", description = "해당 게시글 삭제 권한 없습니다.")
-    @Parameter(
-            name = "id",
-            description = "게시글 번호",
-            example = "1",
-            required = true,
-            in = ParameterIn.PATH,
-            schema = @Schema(type = "number")
-    )
-    public ResponseEntity<ApiResponseDTO> deletePost(
-            @PathVariable Long id
-    ){
-        postService.deletePost(id);
-        return ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
-                .body(ApiResponseDTO.of(true, "게시글 삭제 성공"));
-    }
-
-//    게시글 좋아요 누르기
-    @GetMapping("/like/{postId}")
-    @Operation(summary = "게시글 좋아요", description = "게시글 좋아요 하기")
-    @ApiResponse(responseCode = "200", description = "게시글 좋아요 성공")
-    @ApiResponse(responseCode = "400", description = "해당 게시글에 좋아요 할 수 없습니다")
-    @Parameter(
-            name = "postId",
-            description = "게시글 번호",
-            example = "1",
-            required = true,
-            in = ParameterIn.PATH,
-            schema = @Schema(type = "number")
-    )
-    public ResponseEntity<ApiResponseDTO> increasePostLikeCount(
-            @PathVariable Long postId
-    ){
-        postService.increasePostLikeCount(postId);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ApiResponseDTO.of(true, "좋아요 성공"));
-    }
-
-//    게시글 좋아요 취소
-    @DeleteMapping("/like/{postId}")
-    @Operation(summary = "게시글 좋아요 취소", description = "게시글 좋아요 취소 하기")
-    @ApiResponse(responseCode = "204", description = "게시글 좋아요 취소 성공")
-    @ApiResponse(responseCode = "400", description = "해당 게시글 좋아요 취소 불가능")
-    @Parameter(
-            name = "postId",
-            description = "게시글 번호",
-            example = "1",
-            required = true,
-            in = ParameterIn.PATH,
-            schema = @Schema(type = "number")
-    )
-    public ResponseEntity<ApiResponseDTO> cancelPostLike(
-            @PathVariable Long postId
-    ){
-        postService.cancelPostLike(postId);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ApiResponseDTO.of(true, "좋아요 취소 성공"));
-    }
 }
