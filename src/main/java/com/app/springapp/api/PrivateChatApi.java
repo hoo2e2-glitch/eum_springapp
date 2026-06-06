@@ -1,5 +1,6 @@
 package com.app.springapp.api;
 
+import com.app.springapp.domain.dto.UserDTO;
 import com.app.springapp.domain.dto.request.ChatRequestDTO;
 import com.app.springapp.domain.dto.response.ApiResponseDTO;
 import com.app.springapp.domain.dto.response.ChatResponseDTO;
@@ -12,9 +13,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -36,9 +40,13 @@ public class PrivateChatApi {
             schema = @Schema(type = "number")
     )
     public ResponseEntity<ApiResponseDTO> loadAllChatRoomMessage(
-            @PathVariable Long chatRoomId
+            @PathVariable Long chatRoomId,
+            Authentication authentication
     ) {
-        List<ChatResponseDTO> chats = chatService.loadAllChatRoomMessage(chatRoomId);
+        UserDTO userDTO = (UserDTO) authentication.getPrincipal();
+        Long userId = userDTO.getId();
+
+        List<ChatResponseDTO> chats = chatService.loadAllChatRoomMessage(chatRoomId, userId);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponseDTO.of(true, "메세지 불러오기 성공", chats));
@@ -58,9 +66,17 @@ public class PrivateChatApi {
     )
     public ResponseEntity<ApiResponseDTO> writeChatRoomMessage(
             @PathVariable Long chatRoomId,
-            @RequestBody ChatRequestDTO chatRequestDTO
+            @RequestBody ChatRequestDTO chatRequestDTO,
+            Authentication authentication
     ) {
-        chatService.writeChatMessage(chatRoomId, chatRequestDTO);
+        UserDTO userDTO = (UserDTO) authentication.getPrincipal();
+        Long userId = userDTO.getId();
+
+        Map<String,Object> req = new HashMap<>();
+        req.put("chatRoomId", chatRoomId);
+        req.put("userId", userId);
+
+        chatService.writeChatMessage(req, chatRequestDTO);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponseDTO.of(true, "메세지 작성 성공"));

@@ -32,15 +32,14 @@ public class ChatServiceImpl implements ChatService {
     private final ChatDAO chatDAO;
     private final ChatRoomDAO chatRoomDAO;
     private final ChatRoomService chatRoomService;
-    private final CommunityAuthService communityAuthService;
+//    private final CommunityAuthService communityAuthService;
     private final ChatUserDAO chatUserDAO;
+    private final CommunityAuthService communityAuthService;
 
     //    채팅 메세지 관련
     //    채팅방 내 모든 메세지 불러오기
     @Override
-    public List<ChatResponseDTO> loadAllChatRoomMessage(Long chatRoomId) {
-        Long userId = communityAuthService.getUserId();
-        communityAuthService.checkUserValidity(userId);
+    public List<ChatResponseDTO> loadAllChatRoomMessage(Long chatRoomId, Long userId) {
         ChatVO chatVO = new ChatVO();
         chatVO.setChatRoomId(chatRoomId);
         chatVO.setUserId(userId);
@@ -59,20 +58,28 @@ public class ChatServiceImpl implements ChatService {
 //    웹소캣 통해서 메세지 작성 및 작성 된 메세지 반환
     @Override
     public ChatDTO playRealTimeChat(Long chatRoomId, ChatRequestDTO chatRequestDTO) {
-        Long id = this.writeChatMessage(chatRoomId, chatRequestDTO);
+        Long userId = communityAuthService.getUserId();
+
+        Map<String, Object> req = new HashMap<>();
+        req.put("chatRoomId", chatRoomId);
+        req.put("userId", userId);
+
+        Long id = this.writeChatMessage(req, chatRequestDTO);
         return chatDAO.findById(id);
     }
 
     //    메세지 작성
     @Override
-    public Long writeChatMessage(Long chatRoomId, ChatRequestDTO chatRequestDTO) {
+    public Long writeChatMessage(Map<String, Object> req, ChatRequestDTO chatRequestDTO) {
 //        DTO 를 VO 로 변환 한 뒤에 작성 해야함
+        Long chatRoomId = (Long) req.get("chatRoomId");
+        Long userId = (Long) req.get("userId");
 
-        boolean isJoined = this.isUserInChatRoom(chatRoomId);
+        boolean isJoined = this.isUserInChatRoom(req);
         Long id = 0L;
         ChatVO chatVO = ChatVO.from(chatRequestDTO);
         chatVO.setChatRoomId(chatRoomId);
-        chatVO.setUserId(communityAuthService.getUserId());
+        chatVO.setUserId(userId);
 
         try {
             if(!isJoined) {
@@ -88,18 +95,15 @@ public class ChatServiceImpl implements ChatService {
 
 //    유저가 해당 채팅방에 참여가 되어 있는지?
     @Override
-    public boolean isUserInChatRoom(Long chatRoomId) {
-        Long userId = communityAuthService.getUserId();
-        communityAuthService.checkUserValidity(userId);
+    public boolean isUserInChatRoom(Map<String, Object> req) {
+
+        Long userId = (Long) req.get("userId");
+        Long chatRoomId = (Long) req.get("chatRoomId");
+
         ChatUserVO  chatUserVO = new ChatUserVO();
         chatUserVO.setChatRoomId(chatRoomId);
         chatUserVO.setUserId(userId);
 
-//        ChatVO chatVO = new ChatVO();
-//        chatVO.setChatRoomId(chatRoomId);
-//        chatVO.setUserId(communityAuthService.getUserId());
-//        log.info("테스트 위한 chat vo: {}", chatVO);
-//        return chatDAO.existByChatRoomIdAndUserId(chatVO) != 0;
         return chatUserDAO.existByUserIdAndChatRoomId(chatUserVO) != 0;
     }
 
