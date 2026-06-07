@@ -14,6 +14,6 @@ public class UserReportRequestDTO {
     private String userReportDetail;
 //    @Schema(description = "신고 대상 유저 번호", example = "1", required = true)
 //    private Long userId;
-    @Schema(description = "신고자 유저 번호", example = "2", required = true)
+    @Schema(description = "신고 대상 유저 번호", example = "2", required = true)
     private Long reportingUserId;
 }
