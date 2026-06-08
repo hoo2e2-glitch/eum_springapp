@@ -1,5 +1,6 @@
 package com.app.springapp.service.edu;
 
+import com.app.springapp.domain.dto.SignWordXmlItemDTO;
 import com.app.springapp.domain.dto.response.SignWordResponseDTO;
 import com.app.springapp.domain.dto.response.SignWordXmlResponseDTO;
 import com.app.springapp.domain.vo.SignWordVO;
@@ -92,6 +93,11 @@ public class SignWordServiceImpl implements SignWordService {
     @Override
     public int syncSignWords(int pageNo, int numOfRows) {
         String xml = requestSignWordOpenApi("", pageNo, numOfRows);
+        System.out.println("sign word xml length = " + (xml == null ? 0 : xml.length()));
+        System.out.println("sign word xml preview = " + (
+                xml == null ? "null" : xml.substring(0, Math.min(xml.length(), 500))
+        ));
+
         List<SignWordVO> signWords = convertXmlToSignWordVOs(xml);
 
         int savedCount = 0;
@@ -140,7 +146,7 @@ public class SignWordServiceImpl implements SignWordService {
 //    @Scheduled(cron = "0 */1 * * * *") // 1분마다 캐쉬 초기화
     @Scheduled(cron = "0 0 0 * * *")
     public void scheduledClearCache() {
-//        log.warn("=== 캐시 자동 초기화 실행 ===");
+        log.warn("=== 캐시 자동 초기화 실행 ===");
         redisTemplate.delete("todaySignWords::" + LocalDate.now().toString());
     }
 
@@ -177,11 +183,13 @@ public class SignWordServiceImpl implements SignWordService {
                     responseDTO.getBody() != null ? responseDTO.getBody().getItems() : "null");
 
 
-            if (responseDTO.getBody() == null || responseDTO.getBody().getItems() == null) {
+            if (responseDTO.getBody() == null
+                    || responseDTO.getBody().getItems() == null
+                    || responseDTO.getBody().getItems().getItem() == null) {
                 return List.of();
             }
 
-            return responseDTO.getBody().getItems().stream()
+            return responseDTO.getBody().getItems().getItem().stream()
                     .map(item -> {
                         SignWordVO signWordVO = new SignWordVO();
                         signWordVO.setSignWordTitle(item.getTitle());
