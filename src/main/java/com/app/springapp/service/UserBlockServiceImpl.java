@@ -17,6 +17,7 @@ public class UserBlockServiceImpl implements UserBlockService {
     //    유저 블록 서비스
     @Override
     public void blockUser(Long userId, Long blockingId) {
+//        자기 자신 블락 못함
         if(userId == blockingId){
             throw new UserBlockException("잘못된 요청입니다", HttpStatus.BAD_REQUEST);
         }
@@ -24,6 +25,11 @@ public class UserBlockServiceImpl implements UserBlockService {
         UserBlockVO userBlockVO = new UserBlockVO();
         userBlockVO.setBlockerId(userId);
         userBlockVO.setBlockingId(blockingId);
-        userBlockDAO.save(userBlockVO);
+
+        try {
+            userBlockDAO.save(userBlockVO);
+        } catch (UserBlockException e) {
+            throw new UserBlockException("유저 블락 실패", HttpStatus.BAD_REQUEST);
+        }
     }
 }
