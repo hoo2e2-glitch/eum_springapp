@@ -38,7 +38,7 @@ public class StudyDataBootstrapRunner implements ApplicationRunner {
         if (signWordCount == 0) {
             int totalSavedCount = 0;
 
-//            totalSavedCount += signWordService.syncSignWords(1, 3617);
+            totalSavedCount += signWordService.syncSignWords(1, 3617);
             log.info("sign word saved count = {}", totalSavedCount);
 
             int afterSyncCount = signWordDAO.countAll();
