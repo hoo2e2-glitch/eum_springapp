@@ -123,7 +123,7 @@ public class ChatServiceImpl implements ChatService {
                 .map(ChatRoomResponseDTO::from)
                 .collect(Collectors.toList());
 
-        int roomCounts = chatRoomDAO.findCount();
+        int roomCounts = chatRoomDAO.findCount(filters);
 
         Map<String, Object> result = new HashMap<>();
         result.put("rooms", rooms);

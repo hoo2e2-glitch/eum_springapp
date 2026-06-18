@@ -37,8 +37,8 @@ public class ChatRoomDAO {
     }
 
 //    채팅방 전체 개수 조회
-    public int findCount(){
-        return chatRoomMapper.selectCount();
+    public int findCount(Map<String, Object> filters){
+        return chatRoomMapper.selectCount(filters);
     }
 
 //    채팅방 생성
