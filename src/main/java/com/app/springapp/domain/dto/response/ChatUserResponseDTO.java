@@ -18,6 +18,8 @@ public class ChatUserResponseDTO {
     private String userProfile;
     private String userEmail;
     private Long userExp;
+    private Integer userLevel;
+    private String userLevelName;
 
     public static ChatUserResponseDTO from(ChatUserDTO dto) {
         ChatUserResponseDTO res = new ChatUserResponseDTO();
@@ -29,6 +31,36 @@ public class ChatUserResponseDTO {
         res.setUserEmail(dto.getUserEmail());
         res.setUserExp(dto.getUserExp());
 
+        int level = calculateLevel(dto.getUserExp() != null ? dto.getUserExp() : 0L);
+        res.setUserLevel(level);
+        res.setUserLevelName(getLevelName(level));
+
         return res;
+    }
+
+    private static int calculateLevel(long totalExp) {
+        int level = 1;
+        long remaining = totalExp;
+        while (level < 100) {
+            long required = 100L + ((long) level - 1L) * 20L;
+            if (remaining < required) break;
+            remaining -= required;
+            level++;
+        }
+        return level;
+    }
+
+    private static String getLevelName(int level) {
+        if (level >= 100) return "이음";
+        if (level >= 90) return "수어 마스터";
+        if (level >= 80) return "연결자";
+        if (level >= 70) return "숙련가";
+        if (level >= 60) return "공감가";
+        if (level >= 50) return "표현가";
+        if (level >= 40) return "소통가";
+        if (level >= 30) return "실천가";
+        if (level >= 20) return "학습자";
+        if (level >= 10) return "새싹 수어인";
+        return "입문자";
     }
 }

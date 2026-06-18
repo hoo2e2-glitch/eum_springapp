@@ -37,9 +37,15 @@
         OFFSET #{offset} ROWS FETCH NEXT #{size} ROWS ONLY
     </select>
 
-    <select id="selectCount" resultType="int">
+    <select id="selectCount" parameterType="map" resultType="int">
         SELECT COUNT(*)
         FROM TBL_CHAT_ROOM
+        WHERE CHAT_ROOM_IS_DELETED = 0
+          AND CHAT_ROOM_TYPE = '그룹'
+        <if test="keyword != null and keyword != ''">
+            AND (CHAT_ROOM_NAME LIKE '%' || #{keyword} || '%'
+            OR CHAT_ROOM_DETAIL LIKE '%' || #{keyword} || '%')
+        </if>
     </select>
 
     <select id="selectByUserId" parameterType="map" resultType="ChatRoomDTO">

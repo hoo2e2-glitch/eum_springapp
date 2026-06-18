@@ -19,7 +19,7 @@ public interface ChatRoomMapper {
     public List<ChatRoomDTO> selectAllWithPaging(Map<String, Object> filters);
 
 //    채팅방 전체 개수 조회
-    public int selectCount();
+    public int selectCount(Map<String, Object> filters);
 
 //    사용자가 현재 참여중인 채팅방 목록 페이지네이션 조회
     public List<ChatRoomDTO> selectByUserId(Map<String, Object> filters);
